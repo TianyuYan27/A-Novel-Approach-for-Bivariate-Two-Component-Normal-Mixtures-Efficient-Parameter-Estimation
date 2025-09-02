@@ -5,5 +5,5 @@ The file `Simulation.R` contains the numerical simulation procedures for Bivaria
 # Usage
 We provide The_Proposed_Method.R which can be directly used to implement the algorithm from the aforementioned paper and automatically loads the `Function.R` file containing all necessary simulation functions.
 # Reference
-
+Please feel free to cite as if our work could be helpful for your work.Thank you.
 
