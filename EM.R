@@ -147,7 +147,7 @@ run_simulation_parallel <- function(param_name, params, n_values, num_runs = 100
           
           estimated_params <- em_to_vector(em_result)
           
-          # Calculate only L2PDF, L2CDF, and KL distances
+          # Calculate all distances
           result_row <- data.frame(
             Parameter_Set = task$param_name,
             Sample_Size = task$n,
@@ -201,7 +201,7 @@ run_simulation_parallel <- function(param_name, params, n_values, num_runs = 100
   return(all_results)
 }
 
-# Export functions to cluster (removed mmd_distance)
+# Export functions to cluster
 clusterExport(cl, c("run_simulation_parallel", "params_to_vector", "em_to_vector",
                     "get_kmeans_initial_values",
                     "l2distancef", "l2distanceF", "KL"))
@@ -242,6 +242,7 @@ for (param_name in names(parameter_sets)) {
 # Calculate summary statistics
 progress_report("Calculating summary statistics")
 summary_results <- data.frame()
+
 param_sets <- unique(all_results$Parameter_Set)
 methods <- unique(all_results$Initial_Method)
 
@@ -252,17 +253,17 @@ for (param_set in param_sets) {
                                    all_results$Sample_Size == n & 
                                    all_results$Initial_Method == method, ]
       
-      # Calculate means for all metrics (excluding failed iterations)
+      # Calculate mean of all metrics (excluding failed iterations)
       successful_runs <- subset_data[subset_data$Status == "Success", ]
       
-      # Summarize retry and error statistics
+      # Summarize retry and error situations
       resample_stats <- data.frame(
         Mean_Resample_Count = mean(subset_data$Resample_Count, na.rm = TRUE),
         Mean_Error_Count = mean(subset_data$Error_Count, na.rm = TRUE),
         Failure_Rate = mean(subset_data$Status == "Failed")
       )
       
-      # Calculate means for performance metrics (only keep L2PDF, L2CDF, KL)
+      # Calculate mean of performance metrics
       if (nrow(successful_runs) > 0) {
         perf_summary <- data.frame(
           Mean_L2PDF = mean(successful_runs$L2PDF, na.rm = TRUE),
@@ -277,7 +278,7 @@ for (param_set in param_sets) {
         )
       }
       
-      # Combine all summary information
+      # Merge all summary information
       summary_row <- cbind(
         data.frame(
           Parameter_Set = param_set,
@@ -295,11 +296,12 @@ for (param_set in param_sets) {
 
 # Save results to Excel
 progress_report("Saving results to Excel")
-output_file <- "/root/autodl-tmp/simulation_results_kmeans_only_50_100_150.xlsx"
+output_file <- "/root/autodl-tmp/simulation_results_kmeans_only_50_100_150_200.xlsx"
 write_xlsx(list(
   "Detailed_Results" = all_results,
   "Summary_Results" = summary_results
 ), output_file)
+
 progress_report(paste0("Results saved to: ", output_file))
 
 # Close parallel cluster
