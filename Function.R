@@ -187,8 +187,8 @@ SNTO_Loglik <- function(sample,plot.lb=-5,plot.ub=10,
     AS0 <- THETA0 - cs.bound
     BS0 <- THETA0 + cs.bound
     AS0[1]<-ifelse(AS0[1]<0,0,AS0[1])
-    AS0[3]<-ifelse(AS0[3]<=0,0.2,AS0[3])
-    AS0[5]<-ifelse(AS0[5]<=0,0.2,AS0[5])
+    AS0[3]<-ifelse(AS0[3]<=0,0.01,AS0[3])
+    AS0[5]<-ifelse(AS0[5]<=0,0.01,AS0[5])
     BS0[1]<-ifelse(BS0[1]>1,1,BS0[1])
     CS <- (BS0-AS0)/2
   }
